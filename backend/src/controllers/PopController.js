@@ -1,4 +1,5 @@
 const Pop = require('../models/Pop');
+const Enlace = require('../models/Enlace');
 
 module.exports = {
   async index(req, res) {
@@ -13,7 +14,13 @@ module.exports = {
     req.io.emit('pop', pop);
 
     return res.json(pop);
-  }
+  },
+
+  async neighboors({params: {id}}, res){
+    const {Nome} = await Pop.findById(id, '-__v');
+    const neighboors = await Enlace.find({'P1': Nome},  '-__v')
+    return res.json(neighboors);
+  },
 }
 
 

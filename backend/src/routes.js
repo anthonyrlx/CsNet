@@ -8,6 +8,7 @@ const EnlaceController = require('./controllers/EnlaceController')
 
 routes.get('/api/pops', PopController.index);
 routes.post('/api/pops', PopController.store);
+routes.get('/api/neighboors/:id', PopController.neighboors);
 routes.get('/api/enlaces', EnlaceController.index);
 routes.post('/api/enlaces', EnlaceController.store);
 
