@@ -2,7 +2,7 @@ const Pop = require('../models/Pop');
 
 module.exports = {
   async index(req, res) {
-    const pops = { "teste": "funfando" }
+    const pops = await Pop.find({}, '-__v');
 
     return res.json(pops);
   },

@@ -2,9 +2,9 @@ const Enlace = require('../models/Enlace');
 
 module.exports = {
   async index(req, res) {
-    const enlace = { "teste": "funfando" }
+    const enlaces = await Enlace.find({}, '-__v');
 
-    return res.json(enlace);
+    return res.json(enlaces);
   },
 
   async store(req, res) {
