@@ -1,4 +1,4 @@
-#Csnet
+# Csnet
 
 Csnet is a simple application that implements the Dijkstra algorithm to find the best path between points in a graph
 
@@ -11,7 +11,7 @@ Csnet uses a number of open source projects to work properly:
 Database is hosted on [Mlab](https://mlab.com/).
 
 
-##Requirements
+## Requirements
 What you're going to need:
 - NodeJs
 - Npm or yarn
