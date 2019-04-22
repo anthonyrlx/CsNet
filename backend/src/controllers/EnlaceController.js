@@ -1,4 +1,8 @@
 const Enlace = require('../models/Enlace');
+const Pop = require('../models/Pop');
+const initializeGraph = require('../functions/initializeGraph')
+const dijkstraAlgorithm = require('../functions/dijkstraAlgorithm')
+
 
 module.exports = {
   async index(req, res) {
@@ -15,15 +19,15 @@ module.exports = {
     return res.json(enlace);
   },
 
-  async neighboors({params: {Nome}}, res){
-    const neighboors = await Enlace.find({'P1': Nome},  '-__v' )
-    const neighboors_P2 = await Enlace.find({'P2': Nome},  '-__v')
-    neighboors_P2.forEach(enlace => {
-      neighboors.push(enlace)
-    })
-    
-    return res.json(neighboors);
-  },
+  async dijkstra({ body: { start, end, method, closed } }, res) {
+
+    const enlaces = await Enlace.find({}, '-__v').lean();
+    const Pops = await Pop.find({}, '-__v').lean();
+
+    let map = initializeGraph(enlaces, Pops, method, closed);
+
+    let route = dijkstraAlgorithm(start, end, map)
+
+    return res.json(route)
+  }
 }
-
-

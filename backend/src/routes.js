@@ -10,7 +10,7 @@ routes.get('/api/pops', PopController.index);
 routes.post('/api/pops', PopController.store);
 routes.get('/api/enlaces', EnlaceController.index);
 routes.post('/api/enlaces', EnlaceController.store);
-routes.get('/api/neighboors/:Nome', EnlaceController.neighboors);
+routes.post('/api/distance', EnlaceController.dijkstra);
 
 
 module.exports = routes;
