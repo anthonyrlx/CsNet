@@ -1,0 +1,235 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "XABLAU",
+    "version": "1.0.0",
+    "title": "CsNet API"
+  },
+  "basePath": "/api/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/pops": {
+      "get": {
+        "tags": [
+          "Pops"
+        ],
+        "summary": "Get all Nodes",
+        "operationId": "getAllPops",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/Pop"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Pops"
+        ],
+        "summary": "Create a Node",
+        "operationId": "createPops",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Pop object that needs to be added to the Graph",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Pop"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/Pop"
+            }
+          }
+        }
+      }
+    },
+    "/enlaces": {
+      "get": {
+        "tags": [
+          "Enlaces"
+        ],
+        "summary": "Get all Edges",
+        "operationId": "getEnlaces",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/Enlace"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Enlaces"
+        ],
+        "summary": "Create a Edge",
+        "operationId": "createEnlaces",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Pop object that needs to be added to the Graph",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Enlace"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/Enlace"
+            }
+          }
+        }
+      }
+    },
+    "/distance": {
+      "post": {
+        "tags": [
+          "Distance"
+        ],
+        "summary": "Calculate best path with Dijkstra algorithm",
+        "operationId": "calculate",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Arguments to run Dijkstra algorithm",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/dijkstra"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/dijkstra"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Pop": {
+      "type": "object",
+      "required": [
+        "Nome"
+      ],
+      "properties": {
+        "Nome": {
+          "type": "string",
+          "example": "POA"
+        }
+      }
+    },
+    "Enlace": {
+      "type": "object",
+      "required": [
+        "P1",
+        "routes"
+      ],
+      "properties": {
+        "P1": {
+          "type": "string",
+          "example": "POA"
+        },
+        "routes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/routes"
+          }
+        }
+      }
+    },
+    "routes": {
+      "type": "object",
+      "required": [
+        "name",
+        "metricas"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "POA"
+        },
+        "metricas": {
+          "type": "object",
+          "required": [
+            "distance",
+            "cost"
+          ],
+          "properties": {
+            "distance": {
+              "type": "integer"
+            },
+            "cost": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "dijkstra": {
+      "type": "object",
+      "required": [
+        "start",
+        "end",
+        "method"
+      ],
+      "properties": {
+        "start": {
+          "type": "string",
+          "example": "POA"
+        },
+        "end": {
+          "type": "string",
+          "example": "RJO"
+        },
+        "method": {
+          "type": "string",
+          "example": "distance"
+        },
+        "closed": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Closed Nodes"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
