@@ -7,8 +7,6 @@ const EnlaceController = require('./controllers/EnlaceController')
 
 const swaggerUi = require('swagger-ui-express'), swaggerDocument = require('./swagger.json');
 
-
-
 routes.get('/api/pops', PopController.index);
 routes.post('/api/pops', PopController.store);
 routes.get('/api/enlaces', EnlaceController.index);
