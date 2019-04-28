@@ -197,19 +197,20 @@ window.onload = async () => {
 
     let requestDijkstra = async (popsClicked) => {
         console.log(popsClicked)
-        let urlDijkstra = 'https://csnet-239015.appspot.com/distance'
-        let parameters = { 'start': popsClicked[0], 'end': popsClicked[0], 'method': 'post' }
+        let urlDijkstra = 'http://localhost:9000/api/distance'
+        let parameters = { 'start': popsClicked[0].options.name, 'end': popsClicked[1].options.name, 'method': 'distance', 'closed': [] }
+
+        const headers = {
+            "Content-Type": "application/json",
+            "Access-Control-Origin": "*"
+        }
 
         const response = await fetch(urlDijkstra, {
             method: 'POST',
-            params: parameters
+            headers: headers,
+            body: JSON.stringify(parameters)
         })
-        const feachDDijkstra = async url => {
-            const res = await fetch(url)
-            const json = await res.json()
-            return json
-        }
-        const content = await feachDDijkstra(urlDijkstra)
-        console.log(content)
+
+        console.log(response)
     }
 }

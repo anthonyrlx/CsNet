@@ -37,7 +37,8 @@ function dijkstraAlgorithm(startNode, endNode, map) {
     path.unshift(backtrace[lastStep])
     lastStep = backtrace[lastStep]
   }
-  return `Path is ${path} and time is ${times[endNode]}`
+  response = { path: path, cost: times[endNode] }
+  return response
 }
 module.exports = dijkstraAlgorithm
 
