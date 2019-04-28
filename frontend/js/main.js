@@ -1,8 +1,8 @@
-window.onload = async () =>{
+window.onload = async () => {
     //Cria e coloca o mapa no html
     let mymap = L.map('mapid').setView([-15.7801, -47.9292], 4);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-        attribution: 'Ola',      
+        attribution: 'Ola',
         maxZoom: 4.5,
         minZoom: 4,
         id: 'mapbox.streets',
@@ -18,8 +18,8 @@ window.onload = async () =>{
 
     let popsList = Array();
     //Colocar os pops no mapa
-    let putPopsMap = (name, lat, long) => {  
-        let circle = L.circle([lat, long],{
+    let putPopsMap = (name, lat, long) => {
+        let circle = L.circle([lat, long], {
             color: '#0c2e2d',
             fillColor: '#fff',
             fillOpacity: 1,
@@ -29,19 +29,19 @@ window.onload = async () =>{
         popsList.push(circle)
     }
     //Colocar os enlaces entre os pops
-    let makeEnalece = (p1, p2) =>{
+    let makeEnalece = (p1, p2) => {
         let p1LatLong = null
         let p2LatLong = null
-        popsList.forEach(pop =>{    
+        popsList.forEach(pop => {
             let popName = pop.options.name
             pop._path.attributes[2].textContent = popName
-            if(p1 == popName){
+            if (p1 == popName) {
                 p1LatLong = pop.getLatLng()
             }
         })
-        popsList.forEach(pop =>{   
+        popsList.forEach(pop => {
             let popName = pop.options.name
-            if(p2 == popName){
+            if (p2 == popName) {
                 p2LatLong = pop.getLatLng()
             }
         })
@@ -59,17 +59,17 @@ window.onload = async () =>{
 
     }
 
-    const getPops = async =>{
-        let urlPops = 'http://localhost:9000/api/pops'
+    const getPops = async => {
+        let urlPops = 'https://csnet-239015.appspot.com/api/pops'
         return feachData(urlPops)
-    }    
+    }
 
-    const getEnlaces = async =>{
-        let urlEnlaces = 'http://localhost:9000/api/enlaces'
+    const getEnlaces = async => {
+        let urlEnlaces = 'https://csnet-239015.appspot.com/api/enlaces'
         return feachData(urlEnlaces)
     }
 
-    const feachData = async url =>{
+    const feachData = async url => {
         const res = await fetch(url)
         const json = await res.json()
         return json
@@ -84,10 +84,10 @@ window.onload = async () =>{
     });
 
     const enlaces = await getEnlaces()
-    enlaces.forEach(elementPops =>{
+    enlaces.forEach(elementPops => {
         let p1Name = elementPops.P1
         let routes = elementPops.routes
-        routes.forEach(elementRoute =>{
+        routes.forEach(elementRoute => {
             let p2Name = elementRoute.name
             makeEnalece(p1Name, p2Name)
         })
@@ -95,8 +95,8 @@ window.onload = async () =>{
     //Pegando dois pontos clicados
     let i = 0
     let popsClicked = Array();
-    popsList.forEach(pop =>{
-        pop.addEventListener('mouseover', () =>{
+    popsList.forEach(pop => {
+        pop.addEventListener('mouseover', () => {
             namePop = pop.options.name
 
             let box = document.createElement('div')
@@ -107,7 +107,7 @@ window.onload = async () =>{
 
             btnMarcar.appendChild(document.createTextNode("Marcar"));
             btnDesabilitar.appendChild(document.createTextNode("Desabilitar"))
-            
+
             btnMarcar.style.padding = '2px'
             btnMarcar.style.marginRight = '5px'
             btnMarcar.style.height = '25px'
@@ -119,7 +119,7 @@ window.onload = async () =>{
             btnMarcar.style.borderRadius = '2px'
             btnMarcar.style.fontFamily = 'Courier'
             btnMarcar.style.fontSize = '11px'
-            
+
             btnDesabilitar.style.padding = '2px'
             btnDesabilitar.style.marginRight = '5px'
             btnDesabilitar.style.height = '25px'
@@ -132,22 +132,22 @@ window.onload = async () =>{
             btnDesabilitar.style.fontFamily = 'Courier'
             btnDesabilitar.style.fontSize = '11px'
 
-            btnMarcar.onmouseover = () =>{
+            btnMarcar.onmouseover = () => {
                 btnMarcar.style.backgroundColor = '#355554'
             }
 
-            btnMarcar.onmouseout = () =>{
+            btnMarcar.onmouseout = () => {
                 btnMarcar.style.backgroundColor = '#638a89'
             }
-            
-            btnDesabilitar.onmouseover = () =>{
+
+            btnDesabilitar.onmouseover = () => {
                 btnDesabilitar.style.backgroundColor = '#355554'
             }
 
-            btnDesabilitar.onmouseout = () =>{
+            btnDesabilitar.onmouseout = () => {
                 btnDesabilitar.style.backgroundColor = '#638a89'
             }
-            
+
             text.appendChild(node)
             box.appendChild(text)
             box.appendChild(btnMarcar)
@@ -156,55 +156,55 @@ window.onload = async () =>{
             box.style.textAlign = 'center'
             latlng = pop.getLatLng()
             let popup = L.popup().setLatLng(latlng).setContent(box).openOn(mymap)
-            
-            btnMarcar.addEventListener('click', () =>{
-                if(btnMarcar.innerText == 'Marcar'){
+
+            btnMarcar.addEventListener('click', () => {
+                if (btnMarcar.innerText == 'Marcar') {
                     btnMarcar.innerText = "Desmarcar"
                 }
-                else{
+                else {
                     btnMarcar.innerText = "Marcar"
                 }
                 nodeColor = pop._path.attributes.stroke.nodeValue
-                if(nodeColor == '#0c2e2d'){
+                if (nodeColor == '#0c2e2d') {
                     pop._path.attributes.stroke.nodeValue = 'blue'
                     pop._path.attributes.fill.nodeValue = 'blue'
                     popsClicked.push(pop)
                     i++
-                    if(i == 2){
+                    if (i == 2) {
                         requestDijkstra(popsClicked)
                     }
                 }
-                else{
+                else {
                     pop._path.attributes.stroke.nodeValue = '#0c2e2d'
                     pop._path.attributes.fill.nodeValue = '#fff'
-                    delete popsClicked[i-1] 
+                    delete popsClicked[i - 1]
                     i--
                 }
             })
-            btnDesabilitar.addEventListener('click', () =>{
-                if(btnDesabilitar.innerText == 'Desabilitar'){
+            btnDesabilitar.addEventListener('click', () => {
+                if (btnDesabilitar.innerText == 'Desabilitar') {
                     btnDesabilitar.innerText = "Habilitar"
                 }
-                else{
+                else {
                     btnDesabilitar.innerText = "Desabilitar"
                 }
             })
         })
-        pop.addEventListener('mouseout',() =>{
+        pop.addEventListener('mouseout', () => {
 
         })
     })
 
     let requestDijkstra = async (popsClicked) => {
         console.log(popsClicked)
-        let urlDijkstra = 'http://localhost:9000/api/distance'
-        let parameters = {'start': popsClicked[0], 'end':  popsClicked[0], 'method': 'post'}
-        
+        let urlDijkstra = 'https://csnet-239015.appspot.com/distance'
+        let parameters = { 'start': popsClicked[0], 'end': popsClicked[0], 'method': 'post' }
+
         const response = await fetch(urlDijkstra, {
             method: 'POST',
             params: parameters
-        })       
-        const feachDDijkstra = async url =>{
+        })
+        const feachDDijkstra = async url => {
             const res = await fetch(url)
             const json = await res.json()
             return json
