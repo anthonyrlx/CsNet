@@ -17,6 +17,7 @@ window.onload = async () => {
     mymap.dragging.disable();
 
     let popsList = Array();
+    let lineList = Array();
     //Colocar os pops no mapa
     let putPopsMap = (name, lat, long) => {
         let circle = L.circle([lat, long], {
@@ -32,17 +33,21 @@ window.onload = async () => {
     let makeEnalece = (p1, p2) => {
         let p1LatLong = null
         let p2LatLong = null
+        let p1Name = null
+        let p2Name = null
         popsList.forEach(pop => {
             let popName = pop.options.name
             pop._path.attributes[2].textContent = popName
             if (p1 == popName) {
                 p1LatLong = pop.getLatLng()
+                p1Name = popName
             }
         })
         popsList.forEach(pop => {
             let popName = pop.options.name
             if (p2 == popName) {
                 p2LatLong = pop.getLatLng()
+                p2Name = popName
             }
         })
         let latlngs = Array();
@@ -53,10 +58,14 @@ window.onload = async () => {
             weight: 2.5,
             opacity: 1,
             smoothFactor: 1,
-            riseOnHover: false
+            riseOnHover: false,
+            route1: p1Name + p2Name,
+            route2: p2Name + p1Name,
+            start: p1Name,
+            end: p2Name
         }).addTo(mymap);
+        lineList.push(linha)
         linha.bringToBack();
-
     }
 
     const getPops = async => {
@@ -93,10 +102,19 @@ window.onload = async () => {
         })
     })
     //Pegando dois pontos clicados
+
+    
+
     let i = 0
     let popsClicked = Array();
+    let popsDisable = Array();
     popsList.forEach(pop => {
-        pop.addEventListener('mouseover', () => {
+        let btnMarcar = document.createElement('button')
+        let btnDesabilitar = document.createElement('button')
+
+        btnMarcar.appendChild(document.createTextNode("Marcar"));
+        btnDesabilitar.appendChild(document.createTextNode("Desabilitar"))
+        pop.addEventListener('click', () => {
             namePop = pop.options.name
 
             let box = document.createElement('div')
@@ -104,9 +122,6 @@ window.onload = async () => {
             let node = document.createTextNode("Local: " + namePop);
             let btnMarcar = document.createElement('button')
             let btnDesabilitar = document.createElement('button')
-
-            btnMarcar.appendChild(document.createTextNode("Marcar"));
-            btnDesabilitar.appendChild(document.createTextNode("Desabilitar"))
 
             btnMarcar.style.padding = '2px'
             btnMarcar.style.marginRight = '5px'
@@ -156,61 +171,110 @@ window.onload = async () => {
             box.style.textAlign = 'center'
             latlng = pop.getLatLng()
             let popup = L.popup().setLatLng(latlng).setContent(box).openOn(mymap)
-
+            nodeColor = pop._path.attributes.stroke.nodeValue
+            if(nodeColor == '#0c2e2d'){
+                btnMarcar.innerText = "Marca"
+                btnDesabilitar.innerText = "Desabilitar"
+            }
+            else{
+                btnMarcar.innerText = "Desmarcar"
+                btnDesabilitar.innerText = "Desabilitar"
+            }
             btnMarcar.addEventListener('click', () => {
-                if (btnMarcar.innerText == 'Marcar') {
-                    btnMarcar.innerText = "Desmarcar"
-                }
-                else {
-                    btnMarcar.innerText = "Marcar"
-                }
+                
                 nodeColor = pop._path.attributes.stroke.nodeValue
                 if (nodeColor == '#0c2e2d') {
+                    btnMarcar.innerText = "Desmarcar"
                     pop._path.attributes.stroke.nodeValue = 'blue'
                     pop._path.attributes.fill.nodeValue = 'blue'
                     popsClicked.push(pop)
                     i++
-                    if (i == 2) {
-                        requestDijkstra(popsClicked)
+                    if (i == 2){
+                        popsList.forEach(p =>{
+
+                        })
+                        requestDijkstra(popsClicked, popsDisable)
                     }
                 }
                 else {
+                    btnMarcar.innerText = "Marcar"
                     pop._path.attributes.stroke.nodeValue = '#0c2e2d'
                     pop._path.attributes.fill.nodeValue = '#fff'
-                    delete popsClicked[i - 1]
+                    lineList.forEach(line =>{
+                        line._path.attributes.stroke.nodeValue = 'yellow'
+                    })
+                    popsClicked.splice(popsClicked.indexOf(pop), 1)
                     i--
                 }
             })
+
             btnDesabilitar.addEventListener('click', () => {
-                if (btnDesabilitar.innerText == 'Desabilitar') {
-                    btnDesabilitar.innerText = "Habilitar"
+                nodeColor = pop._path.attributes.stroke.nodeValue
+                if (nodeColor == '#0c2e2d') {
+                    btnDesabilitar.innerText = "Desabilitar"
+                    pop._path.attributes.stroke.nodeValue = 'silver'
+                    pop._path.attributes.fill.nodeValue = 'silver'
+                    popsDisable.push(pop.options.name)
+                    console.log()
+                    popsList.forEach(p =>{
+
+                    })
+                    if(popsClicked.length > 1) {
+                        requestDijkstra(popsClicked, popsDisable)
+                        lineList.forEach(line =>{
+                            line._path.attributes.stroke.nodeValue = 'yellow'
+                        })
+                    }
                 }
                 else {
-                    btnDesabilitar.innerText = "Desabilitar"
+                    btnDesabilitar.innerText = "Habilitar"
+                    pop._path.attributes.stroke.nodeValue = '#0c2e2d'
+                    pop._path.attributes.fill.nodeValue = '#fff'
+                    lineList.forEach(line =>{
+                        line._path.attributes.stroke.nodeValue = 'yellow'
+                    })
+                    popsDisable.splice(popsDisable.indexOf(pop), 1)
+                    if(popsClicked.length > 1) {
+                        requestDijkstra(popsClicked, popsDisable)
+                        lineList.forEach(line =>{
+                            line._path.attributes.stroke.nodeValue = 'yellow'
+                        })
+                    }
                 }
             })
-        })
-        pop.addEventListener('mouseout', () => {
-
+            
         })
     })
-
-    let requestDijkstra = async (popsClicked) => {
-        console.log(popsClicked)
+    
+    let requestDijkstra = async (popsClicked, popsDisable) => {
         let urlDijkstra = 'http://localhost:9000/api/distance'
-        let parameters = { 'start': popsClicked[0].options.name, 'end': popsClicked[1].options.name, 'method': 'distance', 'closed': [] }
+        let parameters = { 'start': popsClicked[0].options.name, 'end': popsClicked[1].options.name, 'method': 'distance', 'closed': popsDisable }
 
         const headers = {
             "Content-Type": "application/json",
             "Access-Control-Origin": "*"
         }
 
-        const response = await fetch(urlDijkstra, {
+        let response = await fetch(urlDijkstra, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(parameters)
         })
 
-        console.log(response)
+        routeResponse = await response.json()
+        changeLine(routeResponse)
+    }
+    count = 0
+    let changeLine  = route =>{
+        lineList.forEach(line =>{
+            route1 = line.options.route1
+            route2 = line.options.route2
+            let popsRoute = route.path
+            for (let i = 0; i <= popsRoute.length; i++){
+                if(popsRoute[i] + popsRoute[i + 1]== route1 || popsRoute[i] + popsRoute[i + 1] == route2){
+                    line._path.attributes.stroke.nodeValue = 'blue'
+                }
+            }
+        })
     }
 }
