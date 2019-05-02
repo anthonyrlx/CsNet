@@ -193,7 +193,7 @@ window.onload = async () => {
                         popsList.forEach(p =>{
 
                         })
-                        requestDijkstra(popsClicked, popsDisable)
+                        document.querySelector('#btn-send').disabled = false
                     }
                 }
                 else {
@@ -204,6 +204,7 @@ window.onload = async () => {
                         line._path.attributes.stroke.nodeValue = 'yellow'
                     })
                     popsClicked.splice(popsClicked.indexOf(pop), 1)
+                    document.querySelector('#btn-send').disabled = true
                     i--
                 }
             })
@@ -211,11 +212,10 @@ window.onload = async () => {
             btnDesabilitar.addEventListener('click', () => {
                 nodeColor = pop._path.attributes.stroke.nodeValue
                 if (nodeColor == '#0c2e2d') {
-                    btnDesabilitar.innerText = "Desabilitar"
+                    btnDesabilitar.innerText = "Habilitar"
                     pop._path.attributes.stroke.nodeValue = 'silver'
                     pop._path.attributes.fill.nodeValue = 'silver'
                     popsDisable.push(pop.options.name)
-                    console.log()
                     popsList.forEach(p =>{
 
                     })
@@ -227,7 +227,7 @@ window.onload = async () => {
                     }
                 }
                 else {
-                    btnDesabilitar.innerText = "Habilitar"
+                    btnDesabilitar.innerText = "Desabilitar"
                     pop._path.attributes.stroke.nodeValue = '#0c2e2d'
                     pop._path.attributes.fill.nodeValue = '#fff'
                     lineList.forEach(line =>{
@@ -276,5 +276,8 @@ window.onload = async () => {
                 }
             }
         })
+    }
+    document.querySelector('#btn-send').onclick = () =>{
+        requestDijkstra(popsClicked, popsDisable)
     }
 }
