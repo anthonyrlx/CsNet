@@ -40,3 +40,17 @@ header h1{
 .float-left{
     float: left;
 }
+.box{
+    border-bottom: 1px solid black;
+    padding-bottom: 35px;
+    margin: 40px auto;
+    width: 85%;
+}
+.box button:disabled{
+    opacity: 0.5;
+    width: 100%;
+}
+.box button{
+    opacity: 1;
+    width: 100%;
+}
