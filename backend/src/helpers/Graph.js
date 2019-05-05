@@ -48,7 +48,7 @@ class Graph {
 
   closeEdges(nodes) {
     nodes.forEach(node => {
-      this.closedEdges.push(node.path);
+      this.closedEdges.push(node.sort());
     });
   }
 
