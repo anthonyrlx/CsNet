@@ -19,12 +19,12 @@ module.exports = {
     return res.json(enlace);
   },
 
-  async dijkstra({ body: { start, end, method, closed } }, res) {
+  async dijkstra({ body: { start, end, method, closedNodes, closedEdges } }, res) {
 
     const enlaces = await Enlace.find({}, '-__v').lean();
     const Pops = await Pop.find({}, '-__v').lean();
 
-    let map = initializeGraph(enlaces, Pops, method, closed);
+    let map = initializeGraph(enlaces, Pops, method, closedNodes, closedEdges);
 
     let route = dijkstraAlgorithm(start, end, map)
 

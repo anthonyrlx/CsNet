@@ -1,10 +1,11 @@
 const Graph = require('../helpers/Graph');
 
-function initializeGraph(enlaces, Pops, method, closed) {
+function initializeGraph(enlaces, Pops, method, closedNodes, closedEdges) {
 
   let map = new Graph();
-  if (closed.length > 0) { map.closeNodes(closed) }
+  if (closedNodes.length > 0) { map.closeNodes(closedNodes) }
 
+  if (closedEdges.length > 0) { map.closeEdges(closedEdges) }
 
   Pops.forEach(pop => {
     map.addNode(pop.Nome);
