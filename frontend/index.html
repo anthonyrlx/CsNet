@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +14,6 @@
     <script src="js/main.js"></script>
     <title>CsNet</title>
 </head>
-
 <body>
     <header>
         <h1>CsNet</h1>
@@ -27,18 +25,17 @@
         <div class="box">   
             <form>
                 <div class="form-group">
-                    <label for="exampleFormControlSelect1">Escolha dois pontos e uma Métrica para calcular a rota</label>
-                    <select class="form-control" id="exampleFormControlSelect1">
-                        <option>Hops(Padrão)</option>
-                        <option>Distancia</option>
-                        <option>Custo</option>
+                    <label for="exampleFormControlSelect1">Marque dois pontos e uma Métrica para calcular a rota</label>
+                    <select class="form-control" id="metrica">
+                        <option value="1">Hops(Padrão)</option>
+                        <option value="2">Distancia</option>
+                        <option value="3">Custo</option>
                     </select>
                 </div>
-                <button type="button" id="btn-send"class="btn btn-primary" disabled>Enviar</button>
+                <button type="button" id="btn-send"class="btn btn-primary" disabled>Traçar Rota</button>
             </form>
         </div>
     </div>
     <div id="mapid"></div>
 </body>
-
 </html>

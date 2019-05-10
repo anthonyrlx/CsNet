@@ -1,9 +1,12 @@
 window.onload = async () => {
     //Cria e coloca o mapa no html
-    let mymap = L.map('mapid').setView([-15.7801, -47.9292], 4);
+    let mymap = L.map('mapid', {
+        zoomDelta: 0.25,
+        zoomSnap: 0
+    }).setView([-15.7801, -47.9292], 4);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: 'Ola',
-        maxZoom: 4.5,
+        maxZoom: 5,
         minZoom: 4,
         id: 'mapbox.streets',
         accessToken: 'pk.eyJ1IjoiZ3VzdGF2b20xOTk3IiwiYSI6ImNqdXViMnlobDAwNGM0ZGtkaG9ra290ODUifQ.mSY-729SnN4Olzu3re61SA'
@@ -11,13 +14,14 @@ window.onload = async () => {
     //Remove algumas configurações do mapa
     //mymap.zoomControl.remove();
     //mymap.scrollWheelZoom.disable();
-    mymap.touchZoom.disable();
+    //mymap.touchZoom.disable();
     mymap.doubleClickZoom.disable();
     //mymap.scrollWheelZoom.disable();
-    mymap.dragging.disable();
-
+    //mymap.dragging.disable();
+    let metrica = 'distance'
     let popsList = Array();
     let lineList = Array();
+    let closeLine = Array();
     //Colocar os pops no mapa
     let putPopsMap = (name, lat, long) => {
         let circle = L.circle([lat, long], {
@@ -55,7 +59,7 @@ window.onload = async () => {
         latlngs.push(p2LatLong);
         let linha = L.polyline(latlngs, {
             color: 'yellow',
-            weight: 2.5,
+            weight: 3.5,
             opacity: 1,
             smoothFactor: 1,
             riseOnHover: false,
@@ -170,7 +174,7 @@ window.onload = async () => {
             box.style.width = '170px'
             box.style.textAlign = 'center'
             latlng = pop.getLatLng()
-            let popup = L.popup().setLatLng(latlng).setContent(box).openOn(mymap)
+            L.popup().setLatLng(latlng).setContent(box).openOn(mymap)
             nodeColor = pop._path.attributes.stroke.nodeValue
             if(nodeColor == '#0c2e2d'){
                 btnMarcar.innerText = "Marca"
@@ -190,20 +194,42 @@ window.onload = async () => {
                     popsClicked.push(pop)
                     i++
                     if (i == 2){
-                        popsList.forEach(p =>{
-
-                        })
                         document.querySelector('#btn-send').disabled = false
+                    }
+                    if(popsClicked.length > 2){
+                        popsClicked = []
+                        popsClicked.push(pop)
+                        document.querySelector('#btn-send').disabled = true
+                        popsList.forEach(function(pop2){
+                            if (pop2 != pop){
+                                pop2._path.attributes.stroke.nodeValue = '#0c2e2d'
+                                pop2._path.attributes.fill.nodeValue = '#fff'
+                            }
+                        })
+                        console.log(popsClicked)
+                        i = 0   
                     }
                 }
                 else {
                     btnMarcar.innerText = "Marcar"
                     pop._path.attributes.stroke.nodeValue = '#0c2e2d'
                     pop._path.attributes.fill.nodeValue = '#fff'
+                    popsClicked.splice(popsClicked.indexOf(pop), 1)
+                    if(popsClicked.length > 0){
+                        popsList.forEach(popColor =>{
+                            popColorName = popColor.options.name
+                            popClickedName = popsClicked[0].options.name
+                            if(popColorName != popClickedName){
+                                popColor._path.attributes.stroke.nodeValue = '#0c2e2d'
+                                popColor._path.attributes.fill.nodeValue = '#fff'
+                            }
+                        })
+                    }
+
                     lineList.forEach(line =>{
                         line._path.attributes.stroke.nodeValue = 'yellow'
                     })
-                    popsClicked.splice(popsClicked.indexOf(pop), 1)
+                    
                     document.querySelector('#btn-send').disabled = true
                     i--
                 }
@@ -211,16 +237,15 @@ window.onload = async () => {
 
             btnDesabilitar.addEventListener('click', () => {
                 nodeColor = pop._path.attributes.stroke.nodeValue
-                if (nodeColor == '#0c2e2d') {
+                if (nodeColor == '#0c2e2d' || nodeColor == 'blue') {
                     btnDesabilitar.innerText = "Habilitar"
                     pop._path.attributes.stroke.nodeValue = 'silver'
                     pop._path.attributes.fill.nodeValue = 'silver'
+                    console.log(pop)
                     popsDisable.push(pop.options.name)
-                    popsList.forEach(p =>{
-
-                    })
+                   
                     if(popsClicked.length > 1) {
-                        requestDijkstra(popsClicked, popsDisable)
+                        requestDijkstra(popsClicked, popsDisable, metrica)
                         lineList.forEach(line =>{
                             line._path.attributes.stroke.nodeValue = 'yellow'
                         })
@@ -230,12 +255,10 @@ window.onload = async () => {
                     btnDesabilitar.innerText = "Desabilitar"
                     pop._path.attributes.stroke.nodeValue = '#0c2e2d'
                     pop._path.attributes.fill.nodeValue = '#fff'
-                    lineList.forEach(line =>{
-                        line._path.attributes.stroke.nodeValue = 'yellow'
-                    })
+                    cleanEnlaces()
                     popsDisable.splice(popsDisable.indexOf(pop), 1)
                     if(popsClicked.length > 1) {
-                        requestDijkstra(popsClicked, popsDisable)
+                        requestDijkstra(popsClicked, popsDisable, metrica)
                         lineList.forEach(line =>{
                             line._path.attributes.stroke.nodeValue = 'yellow'
                         })
@@ -246,9 +269,12 @@ window.onload = async () => {
         })
     })
     
-    let requestDijkstra = async (popsClicked, popsDisable) => {
+    let requestDijkstra = async (popsClicked, popsDisable, metrica) => {
+        cleanEnlaces()
+        console.log(metrica)
         let urlDijkstra = 'http://localhost:9000/api/distance'
-        let parameters = { 'start': popsClicked[0].options.name, 'end': popsClicked[1].options.name, 'method': 'distance', 'closed': popsDisable }
+        let parameters = { 'start': popsClicked[0].options.name, 'end': popsClicked[1].options.name, 'method': metrica, 'closedNodes': popsDisable, 
+        'closedEdges':closeLine}
 
         const headers = {
             "Content-Type": "application/json",
@@ -276,8 +302,82 @@ window.onload = async () => {
                 }
             }
         })
+        let pops = route.path
+        pops.forEach(pop =>{
+            popChange = pop
+            popsList.forEach(popMap =>{
+                if(popMap.options.name == popChange) {
+                    popMap._path.attributes.stroke.nodeValue = 'blue'
+                    popMap._path.attributes.fill.nodeValue = 'blue'
+                }
+            })
+        }) 
+    
     }
     document.querySelector('#btn-send').onclick = () =>{
-        requestDijkstra(popsClicked, popsDisable)
+        let elementMetrica = document.querySelector('#metrica').value
+        if(elementMetrica == '1') metrica = 'distance'//Mudar aqui depois   
+        if(elementMetrica == '2') metrica = 'distance'
+        if(elementMetrica == '3') metrica = 'cost'
+        requestDijkstra(popsClicked, popsDisable, metrica)
+    }
+
+    lineList.forEach(function(line){
+        line.addEventListener('click', function(){
+            latlng = line.getCenter()
+            box = createElements()
+            L.popup().setLatLng(latlng).setContent(box).openOn(mymap)
+            const lineElement = box.querySelector('button')
+            if(line._path.attributes.stroke.nodeValue == 'yellow') lineElement.innerText = 'Desabilitar'
+            else lineElement.innerText = 'Habilitar'
+            lineElement.onclick = function(){
+                if (line._path.attributes.stroke.nodeValue == 'yellow'){
+                    lineElement.innerText = 'Habilitar'
+                    line._path.attributes.stroke.nodeValue = 'silver'
+                    listClickedLine = []
+                    listClickedLine.push(line.options.start)
+                    listClickedLine.push(line.options.end)
+                    closeLine.push(listClickedLine)
+                }
+                else{
+                    line._path.attributes.stroke.nodeValue = 'yellow'
+                    lineElement.innerText = 'Desabilitar'
+                    listRemoveLine = []
+                    listRemoveLine.push(line.options.start)
+                    listRemoveLine.push(line.options.end)
+                    closeLine.splice(listRemoveLine.indexOf(line), 1)
+                }
+            }
+        })
+    })
+
+    function cleanEnlaces(){
+        lineList.forEach(line =>{
+            line._path.attributes.stroke.nodeValue = 'yellow'
+        })
+    }
+
+    function createElements(){
+        let box = document.createElement('div')
+        let text = document.createElement('h3')
+
+        let btnMarcar = document.createElement('button')
+
+        btnMarcar.style.padding = '2px'
+        btnMarcar.style.marginRight = '5px'
+        btnMarcar.style.height = '25px'
+        btnMarcar.style.width = '80px'
+        btnMarcar.style.backgroundColor = '#638a89'
+        btnMarcar.style.color = '#fff'
+        btnMarcar.style.border = '0'
+        btnMarcar.style.cursor = 'pointer'
+        btnMarcar.style.borderRadius = '2px'
+        btnMarcar.style.fontFamily = 'Courier'
+        btnMarcar.style.fontSize = '11px'
+        box.appendChild(text)
+        box.appendChild(btnMarcar)
+        box.style.width = '170px'
+        box.style.textAlign = 'center'
+        return box
     }
 }
