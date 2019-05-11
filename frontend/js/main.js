@@ -191,7 +191,7 @@ window.onload = async () => {
             }
             else{
                 btnMarcar.innerText = "Desmarcar"
-                btnDesabilitar.innerText = "Desabilitar"
+                btnDesabilitar.innerText = "Habilitar"
             }
             btnMarcar.addEventListener('click', () => {
                 
