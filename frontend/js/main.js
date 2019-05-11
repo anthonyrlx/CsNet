@@ -185,7 +185,7 @@ window.onload = async () => {
             latlng = pop.getLatLng()
             L.popup().setLatLng(latlng).setContent(box).openOn(mymap)
             nodeColor = pop._path.attributes.stroke.nodeValue
-            if(nodeColor == '#0c2e2d'){
+            if(nodeColor == '#0c2e2d' || nodeColor == 'blue'){
                 btnMarcar.innerText = "Marca"
                 btnDesabilitar.innerText = "Desabilitar"
             }
