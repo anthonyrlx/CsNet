@@ -34,7 +34,7 @@ window.onload = async () => {
         popsList.push(circle)
     }
     //Colocar os enlaces entre os pops
-    let makeEnalece = (p1, p2) => {
+    let makeEnalece = (p1, p2, routes) => {
         let p1LatLong = null
         let p2LatLong = null
         let p1Name = null
@@ -57,6 +57,12 @@ window.onload = async () => {
         let latlngs = Array();
         latlngs.push(p1LatLong);
         latlngs.push(p2LatLong);
+        cost = null
+        distance = null
+        routes.forEach(function(route){
+            if(route.name == p2Name || route.name == p1Name) cost = route.metricas.cost, distance = route.metricas.distance
+            //console.log(distance)
+        })
         let linha = L.polyline(latlngs, {
             color: 'yellow',
             weight: 3.5,
@@ -66,7 +72,9 @@ window.onload = async () => {
             route1: p1Name + p2Name,
             route2: p2Name + p1Name,
             start: p1Name,
-            end: p2Name
+            end: p2Name,
+            cost : cost,
+            distance : distance
         }).addTo(mymap);
         lineList.push(linha)
         linha.bringToBack();
@@ -100,9 +108,10 @@ window.onload = async () => {
     enlaces.forEach(elementPops => {
         let p1Name = elementPops.P1
         let routes = elementPops.routes
+        routes = elementPops.routes
         routes.forEach(elementRoute => {
             let p2Name = elementRoute.name
-            makeEnalece(p1Name, p2Name)
+            makeEnalece(p1Name, p2Name, routes)
         })
     })
     //Pegando dois pontos clicados
@@ -241,7 +250,6 @@ window.onload = async () => {
                     btnDesabilitar.innerText = "Habilitar"
                     pop._path.attributes.stroke.nodeValue = 'silver'
                     pop._path.attributes.fill.nodeValue = 'silver'
-                    console.log(pop)
                     popsDisable.push(pop.options.name)
                    
                     if(popsClicked.length > 1) {
@@ -268,10 +276,12 @@ window.onload = async () => {
             
         })
     })
-    
     let requestDijkstra = async (popsClicked, popsDisable, metrica) => {
+        mymap.eachLayer(function(layer) {
+            console.log(layer)
+            if(layer.options.pane === "tooltipPane") layer.removeFrom(mymap);
+        });
         cleanEnlaces()
-        console.log(metrica)
         let urlDijkstra = 'http://localhost:9000/api/distance'
         let parameters = { 'start': popsClicked[0].options.name, 'end': popsClicked[1].options.name, 'method': metrica, 'closedNodes': popsDisable, 
         'closedEdges':closeLine}
@@ -292,6 +302,9 @@ window.onload = async () => {
     }
     count = 0
     let changeLine  = route =>{
+        hops = 0
+        costTotal = 0
+        distanceTotal = 0
         lineList.forEach(line =>{
             route1 = line.options.route1
             route2 = line.options.route2
@@ -299,6 +312,24 @@ window.onload = async () => {
             for (let i = 0; i <= popsRoute.length; i++){
                 if(popsRoute[i] + popsRoute[i + 1]== route1 || popsRoute[i] + popsRoute[i + 1] == route2){
                     line._path.attributes.stroke.nodeValue = 'blue'
+                    
+                    latlng = line.getCenter()
+                    hops += 1
+                    costTotal += line.options.cost
+                    distanceTotal += line.options.distance
+                    //console.log(costTotal)
+                    show(hops, costTotal, distanceTotal)
+                    if(metrica == 'cost'){
+                        L.tooltip().setLatLng(latlng).setContent(line.options.cost.toString()).addTo(mymap)
+                    }
+                    if(metrica == 'distance'){
+                        L.tooltip().removeFrom(mymap)
+                        L.tooltip().setLatLng(latlng).setContent(line.options.distance.toString()).addTo(mymap)
+                    }
+                    if(metrica == 'hops'){
+                        L.tooltip().removeFrom(mymap)
+                        L.tooltip().setLatLng(latlng).setContent('1').addTo(mymap)
+                    }
                 }
             }
         })
@@ -316,9 +347,15 @@ window.onload = async () => {
     }
     document.querySelector('#btn-send').onclick = () =>{
         let elementMetrica = document.querySelector('#metrica').value
-        if(elementMetrica == '1') metrica = 'distance'//Mudar aqui depois   
+        if(elementMetrica == '1') metrica = 'hops'
         if(elementMetrica == '2') metrica = 'distance'
         if(elementMetrica == '3') metrica = 'cost'
+        popsList.forEach(function(pop){
+            if (pop != popsClicked[0] || pop != popsClicked[1]){
+                pop._path.attributes.stroke.nodeValue = '#0c2e2d'
+                pop._path.attributes.fill.nodeValue = '#fff'
+            }
+        })
         requestDijkstra(popsClicked, popsDisable, metrica)
     }
 
@@ -328,16 +365,26 @@ window.onload = async () => {
             box = createElements()
             L.popup().setLatLng(latlng).setContent(box).openOn(mymap)
             const lineElement = box.querySelector('button')
-            if(line._path.attributes.stroke.nodeValue == 'yellow') lineElement.innerText = 'Desabilitar'
+            if(line._path.attributes.stroke.nodeValue == 'yellow' || line._path.attributes.stroke.nodeValue == 'blue') lineElement.innerText = 'Desabilitar'
             else lineElement.innerText = 'Habilitar'
             lineElement.onclick = function(){
-                if (line._path.attributes.stroke.nodeValue == 'yellow'){
+                if (line._path.attributes.stroke.nodeValue == 'yellow' || line._path.attributes.stroke.nodeValue == 'blue'){
                     lineElement.innerText = 'Habilitar'
                     line._path.attributes.stroke.nodeValue = 'silver'
                     listClickedLine = []
                     listClickedLine.push(line.options.start)
                     listClickedLine.push(line.options.end)
                     closeLine.push(listClickedLine)
+                    if(popsClicked.length > 1) {
+                        popsList.forEach(function(pop){
+                            if (pop != popsClicked[0] || pop != popsClicked[1]){
+                                pop._path.attributes.stroke.nodeValue = '#0c2e2d'
+                                pop._path.attributes.fill.nodeValue = '#fff'
+                            }
+                        })
+                        requestDijkstra(popsClicked, popsDisable, metrica)
+                        line._path.attributes.stroke.nodeValue = 'silver'
+                    }
                 }
                 else{
                     line._path.attributes.stroke.nodeValue = 'yellow'
@@ -346,6 +393,16 @@ window.onload = async () => {
                     listRemoveLine.push(line.options.start)
                     listRemoveLine.push(line.options.end)
                     closeLine.splice(listRemoveLine.indexOf(line), 1)
+                    popsList.forEach(function(pop){
+                        if (pop != popsClicked[0] || pop != popsClicked[1]){
+                            pop._path.attributes.stroke.nodeValue = '#0c2e2d'
+                            pop._path.attributes.fill.nodeValue = '#fff'
+                        }
+                    })
+                    if(popsClicked.length > 1) {
+                        requestDijkstra(popsClicked, popsDisable, metrica)
+                        
+                    }
                 }
             }
         })
@@ -353,7 +410,9 @@ window.onload = async () => {
 
     function cleanEnlaces(){
         lineList.forEach(line =>{
-            line._path.attributes.stroke.nodeValue = 'yellow'
+            if(line._path.attributes.stroke.nodeValue != 'silver'){
+                line._path.attributes.stroke.nodeValue = 'yellow'
+            }
         })
     }
 
@@ -376,8 +435,15 @@ window.onload = async () => {
         btnMarcar.style.fontSize = '11px'
         box.appendChild(text)
         box.appendChild(btnMarcar)
-        box.style.width = '170px'
+        box.style.width = '80px'
         box.style.textAlign = 'center'
         return box
+    }
+    function show(hops, cost, distance){
+        const element = document.querySelector('#showNumber')
+        //hops += hops
+        if(metrica == 'hops') element.innerText = 'Total de hops: ' + hops
+        if(metrica == 'cost') element.innerText = 'Total de custo: ' + cost
+        if(metrica == 'distance') element.innerText = 'Total de distancia: ' + distance
     }
 }
