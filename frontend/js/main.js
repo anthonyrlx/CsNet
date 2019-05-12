@@ -282,7 +282,7 @@ window.onload = async () => {
             if(layer.options.pane === "tooltipPane") layer.removeFrom(mymap);
         });
         cleanEnlaces()
-        let urlDijkstra = 'http://localhost:9000/api/distance'
+        let urlDijkstra = 'https://csnet-239015.appspot.com/api/distance'
         let parameters = { 'start': popsClicked[0].options.name, 'end': popsClicked[1].options.name, 'method': metrica, 'closedNodes': popsDisable, 
         'closedEdges':closeLine}
 
