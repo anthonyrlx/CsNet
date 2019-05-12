@@ -1,13 +1,14 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "XABLAU",
+    "description": "Documentação API do Backend",
     "version": "1.0.0",
     "title": "CsNet API"
   },
   "basePath": "/api/",
   "schemes": [
-    "http"
+    "http",
+    "https"
   ],
   "paths": {
     "/pops": {
@@ -144,12 +145,28 @@
     "Pop": {
       "type": "object",
       "required": [
-        "Nome"
+        "Nome",
+        "LatLong"
       ],
       "properties": {
         "Nome": {
           "type": "string",
           "example": "POA"
+        },
+        "LatLong": {
+          "type": "object",
+          "properties": {
+            "lat": {
+              "type": "integer",
+              "format": "float",
+              "example": -23.5505
+            },
+            "long": {
+              "type": "integer",
+              "format": "float",
+              "example": -46.6333
+            }
+          }
         }
       }
     },
@@ -195,6 +212,9 @@
             },
             "cost": {
               "type": "integer"
+            },
+            "hops": {
+              "type": "integer"
             }
           }
         }
@@ -220,12 +240,24 @@
           "type": "string",
           "example": "distance"
         },
-        "closed": {
+        "closedNodes": {
           "type": "array",
           "items": {
             "type": "string",
             "enum": [
-              "Closed Nodes"
+              "POA"
+            ]
+          }
+        },
+        "closedEdges": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              [
+                "POA",
+                "FLO"
+              ]
             ]
           }
         }
