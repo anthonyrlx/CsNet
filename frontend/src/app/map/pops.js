@@ -5,7 +5,7 @@ function addPopOnMap(name, lat, long){
       fillOpacity: 1,
       radius: 25000,
       name: name
-  }).addTo(mymap)
+  }).addTo(map)
 }
 
 function createPops(popsArray){
