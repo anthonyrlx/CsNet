@@ -1,0 +1,42 @@
+body, h1, h2 {
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+header {
+  background-color: #3779c4;
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  height: 4rem;
+  width: 100%;
+}
+
+header > h1 {
+  color: #fff;
+}
+
+header > a {
+  color: #fff;
+}
+
+.content-box {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 4rem);
+  width: 100%;
+}
+
+aside {
+  height: inherit;
+  width: 20%;
+}
+
+.map-box {
+  height: inherit;
+  width: 80%;
+}

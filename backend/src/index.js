@@ -15,7 +15,7 @@ app.use((req, res, next) => {
 app.use(cors());
 app.use(express.json());
 
-app.use(express.static('frontend/'));
+app.use(express.static('frontend/public/'));
 
 app.get('/', (req, res) => {
   return res.sendFile('index.html');
