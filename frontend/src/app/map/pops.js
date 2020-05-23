@@ -1,3 +1,5 @@
+import createPopOptions from './popOptions';
+
 function addPopOnMap(name, lat, long){
   L.circle([lat, long], {
       color: '#071E22',
@@ -5,7 +7,9 @@ function addPopOnMap(name, lat, long){
       fillOpacity: 1,
       radius: 25000,
       name: name
-  }).addTo(map)
+  })
+    .bindPopup(createPopOptions('Marcar', 'Desabilitar'))
+    .addTo(map);
 }
 
 function createPops(popsArray){

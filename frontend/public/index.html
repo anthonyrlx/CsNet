@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./css/leaflet.css">
+  <link rel="stylesheet" href="./css/mainleaflet.css">
   <link rel="stylesheet" href="./css/main.css">
   <title>CsNet</title>
 </head>
@@ -14,10 +15,15 @@
       <a href="#">Docs</a>
     </header>
     <div class="content-box">
-      <aside>
-        
-      </aside>
       <div class="map-box" id="map">
+        <div class="menu">
+          <select class="menu-options">
+            <option value="1">Hops(Padrão)</option>
+            <option value="2">Distancia</option>
+            <option value="3">Custo</option>
+          </select>
+          <button class="menu-button" disabled>Traçar Rota</button>
+        </div>
       </div>
     </div>
   </main>

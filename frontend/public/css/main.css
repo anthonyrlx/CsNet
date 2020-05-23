@@ -5,7 +5,7 @@ body, h1, h2 {
 }
 
 header {
-  background-color: #3779c4;
+  background-color: #386377;
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
@@ -31,12 +31,45 @@ header > a {
   width: 100%;
 }
 
-aside {
-  height: inherit;
-  width: 20%;
-}
-
 .map-box {
   height: inherit;
-  width: 80%;
+  width: 100%;
+}
+
+.menu {
+  background-color: #ccc;
+  border-radius: 0.125rem;
+  margin-top: 1rem;
+  margin-left: 1rem;
+  position: absolute;
+  height: 2.5rem;
+  width: auto;
+  z-index: 999;
+}
+
+.menu-options {
+  background-color: #5f5959;
+  color: #fff;
+  border-radius: 0.125rem;
+  border: 0;
+  padding: 0 0.5rem;
+  cursor: pointer;
+  height: 2.5rem;
+  width: 10rem;
+}
+
+.menu-options > option {
+  cursor: pointer;
+  height: 1rem;
+}
+
+.menu-button {
+  background-color: #386377;
+  border: 0;
+  border-radius: 0.125rem;
+  padding: 0 0.75rem;
+  cursor: pointer;
+  color: #fff;
+  height: 2.5rem;
+  width: auto;
 }
