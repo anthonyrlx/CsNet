@@ -1,7 +1,7 @@
 function addPopOnMap(name, lat, long){
   L.circle([lat, long], {
-      color: '#0c2e2d',
-      fillColor: '#fff',
+      color: '#071E22',
+      fillColor: '#FFF',
       fillOpacity: 1,
       radius: 25000,
       name: name

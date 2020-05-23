@@ -1,8 +1,9 @@
 import createPops from './pops';
+import createEnlaces from './enlaces';
 window.map = L.map('map', {
   zoomDelta: 0.25,
   zoomSnap: 0
-}).setView([-15.7801, -47.9292], 4);
+}).setView([-15.7801, -47.9292], 4.65);
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
   id: 'mapbox.streets',
   attribution: 'CsNet',
@@ -14,4 +15,5 @@ map.doubleClickZoom.disable();
 
 export {
   createPops,
+  createEnlaces,
 }

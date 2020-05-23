@@ -1,23 +1,23 @@
 import api from './app/services/api';
-import { createPops } from './app/map/map';
+import { createPops, createEnlaces } from './app/map/map';
 
 async function fecthPops(){
   try {
     const { data } = await api.get('/pops');
     createPops(data);
+    fecthEnlaces(data);
   } catch (error) {
     console.log(error);
   }
 }
 
-async function fecthEnlaces(){
+async function fecthEnlaces(pops){
   try {
     const { data } = await api.get('/enlaces');
-    console.log(data)
+    createEnlaces(data, pops);
   } catch (error) {
     console.log(error);
   }
 }
 
-fecthPops()
-fecthEnlaces()
+fecthPops();
