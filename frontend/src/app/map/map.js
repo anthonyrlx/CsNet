@@ -1,5 +1,5 @@
 import createPops from './pops';
-const mymap = L.map('map', {
+window.mymap = L.map('map', {
   zoomDelta: 0.25,
   zoomSnap: 0
 }).setView([-15.7801, -47.9292], 4);
@@ -12,7 +12,6 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
 }).addTo(mymap);
 mymap.doubleClickZoom.disable();
 
-export const map = {
-  mymap,
+export {
   createPops,
 }

@@ -1,14 +1,10 @@
 import api from './app/services/api';
-import './app/map/map';
-
-const pops = [];
-const enlaces = [];
+import { createPops } from './app/map/map';
 
 async function fecthPops(){
   try {
     const { data } = await api.get('/pops');
-    pops.push(...data);
-
+    createPops(data);
   } catch (error) {
     console.log(error);
   }
@@ -17,14 +13,11 @@ async function fecthPops(){
 async function fecthEnlaces(){
   try {
     const { data } = await api.get('/enlaces');
-    enlaces.push(...data);
+    console.log(data)
   } catch (error) {
     console.log(error);
   }
 }
 
-
-
 fecthPops()
 fecthEnlaces()
-setTimeout(() => console.log(pops, enlaces), 2000)
