@@ -73,3 +73,8 @@ header > a {
   height: 2.5rem;
   width: auto;
 }
+
+.-disabled {
+  opacity: 0.5;
+  cursor: default;
+}

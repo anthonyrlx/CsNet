@@ -20,6 +20,11 @@ L.control.zoom({
 }).addTo(map);
 map.doubleClickZoom.disable();
 
+map.pops = [];
+map.enlaces = [];
+map.markedPops = [];
+map.disabledPops = [];
+
 export {
   createPops,
   createEnlaces,

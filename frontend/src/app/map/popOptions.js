@@ -1,16 +1,18 @@
-function createPopOptions(firstButtonText, secondButtonText){
-  const firstButton = createButton(firstButtonText);
-  const secondButton = createButton(secondButtonText);
+function createPopOptions(firstButtonText, secondButtonText, name, onClickPopOption){
+  const firstButton = createButton(firstButtonText, name + '-mark', onClickPopOption);
+  const secondButton = createButton(secondButtonText, name + '-disable', onClickPopOption);
   const divElement = document.createElement('div');
   divElement.appendChild(firstButton);
   divElement.appendChild(secondButton);
   return divElement;
 }
 
-function createButton(buttonText){
+function createButton(buttonText, id, onClickPopOption){
   const button = document.createElement('button');
   const text = document.createTextNode(buttonText);
   button.appendChild(text);
+  button.setAttribute('id', id);
+  button.addEventListener('click', onClickPopOption);
   button.style.setProperty('background-color', '#386377');
   button.style.setProperty('border-radius', '0.125rem');
   button.style.setProperty('cursor', 'pointer');
